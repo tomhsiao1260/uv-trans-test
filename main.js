@@ -53,12 +53,14 @@ window.addEventListener(
 
 // Plane
 const pSize = 1.5
-const geometry = new THREE.PlaneGeometry(pSize * uv1Width / uv1Height, pSize , 100, 100)
+// const geometry = new THREE.PlaneGeometry(pSize * textureWidth / textureHeight, pSize , 1, 1)
+const geometry = new THREE.PlaneGeometry(pSize * uv1Width / uv1Height, pSize , 1, 1)
 
-const uv1Texture = new TextureLoader().load('20230702185753/20230702185753_l1_uv.png', render)
+const uvaTexture = new TextureLoader().load('20230702185753/20230702185753_l1_uv_a.png', render)
+const uvbTexture = new TextureLoader().load('20230702185753/20230702185753_l1_uv_b.png', render)
 const surfTexture = await new TIFFLoader().load(`20230702185753/20230702185753_texture.tif`)
 
-const m1 = setupMaterial(surfTexture, uv1Texture)
+const m1 = setupMaterial(surfTexture, uvaTexture, uvbTexture)
 const p1 = new THREE.Mesh(geometry, m1)
 
 const meshList = [ p1 ]
@@ -79,16 +81,20 @@ function render() {
     renderer.render(scene, camera)
 }
 
-function setupMaterial(surfTexture, uv3Texture) {
+function setupMaterial(surfTexture, uvTexture) {
     const material = new Shader()
 
     surfTexture.minFilter = THREE.NearestFilter
     surfTexture.magFilter = THREE.NearestFilter
     material.uniforms.tSurface.value = surfTexture
 
-    uv3Texture.minFilter = THREE.NearestFilter
-    uv3Texture.magFilter = THREE.NearestFilter
-    material.uniforms.tUV.value = uv3Texture
+    uvaTexture.minFilter = THREE.NearestFilter
+    uvaTexture.magFilter = THREE.NearestFilter
+    material.uniforms.tUVa.value = uvaTexture
+
+    uvbTexture.minFilter = THREE.NearestFilter
+    uvbTexture.magFilter = THREE.NearestFilter
+    material.uniforms.tUVb.value = uvbTexture
 
     return material
 }

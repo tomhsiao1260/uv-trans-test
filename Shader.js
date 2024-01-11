@@ -8,7 +8,8 @@ export class Shader extends ShaderMaterial {
 
       uniforms: {
         tSurface: { value: null },
-        tUV: { value: null },
+        tUVa: { value: null },
+        tUVb: { value: null },
       },
 
       vertexShader: /* glsl */ `
@@ -30,15 +31,19 @@ export class Shader extends ShaderMaterial {
 
       fragmentShader: /* glsl */ `
         uniform sampler2D tSurface;
-        uniform sampler2D tUV;
+        uniform sampler2D tUVa;
+        uniform sampler2D tUVb;
 
         varying vec2 vUv;
 
         void main() {
-          vec4 uvColor = texture2D(tUV, vec2(vUv.x, 1.0 - vUv.y));
-          vec4 surfColor = texture2D(tSurface, vec2(uvColor.x, uvColor.y));
+          vec4 uvaColor = texture2D(tUVa, vec2(vUv.x, 1.0 - vUv.y));
+          vec4 uvbColor = texture2D(tUVb, vec2(vUv.x, 1.0 - vUv.y));
+          vec4 uv = uvaColor + uvbColor / 256.0;
 
-          if (uvColor.a < 0.01) discard;
+          vec4 surfColor = texture2D(tSurface, uv.xy);
+
+          if (uvaColor.a < 0.01) discard;
 
           gl_FragColor = vec4(surfColor.rgb, 1.0);
         }
